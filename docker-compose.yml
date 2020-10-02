@@ -1,26 +1,41 @@
-version: '3'
+version: '3' # composeファイルのバーション指定
 services:
-  api:
-    links:
-      - mysql
+  db:
+    container_name: dune-db
+    build:
+      context: .
+      dockerfile: ./docker/mysql/Dockerfile
+    hostname: mysql
+    ports:
+      - "3306:3306"
+    env_file:
+      - ./docker/mysql/env
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci --skip-character-set-client-handshake
+    volumes:
+      - "./mysql_data/mysql:/var/lib/mysql"
+      - "./docker/mysql/my.conf:/etc/mysql/my.conf"
+      - "./docker/mysql/init/:/docker-entrypoint-initdb.d"
+
+  api01:
+    container_name: dune-api
     build:
       context: .
       dockerfile: ./docker/api/Dockerfile
     ports:
-      - "8080:8080"
+      - 3000:3000
+    tty: true # コンテナの起動永続化
     volumes:
       - ./src/api:/go/src/api
-  mysql:
-    build: ./docker/db
-    image: mysql:8.0.21
-    restart: always
-    environment:
-      MYSQL_USER: root
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: sample
-    hostname: mysql
+    command: bash -c "cd ./src/api && realize start --server"
+    depends_on:
+      - db
+
+  proxy:
+    container_name: dune-proxy
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
     ports:
-      - "3306:3306"
-    volumes:
-      - ./docker/db/conf.d:/etc/mysql/conf.d
-      - ./log/mysql:/var/log/mysql
+      - 8000:80
+    depends_on:
+      - api01

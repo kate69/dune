@@ -2,3 +2,4 @@ vcs.xml
 dune.iml
 modules.xml
 workspace.xml
+mysql_data/mysql

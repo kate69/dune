@@ -1,16 +1,19 @@
+# ベースとなるDockerイメージ指定
 FROM golang:latest
 
-COPY src/api /go/src/api
+# コンテナ内に作業ディレクトリを作成
+RUN mkdir -p /go/src/work
 
-WORKDIR /go/src/api/
+# コンテナログイン時のディレクトリ指定
+WORKDIR /go/src/work
 
-RUN go get -u github.com/gin-gonic/gin
-RUN go get -u github.com/jinzhu/gorm
-RUN go get -u github.com/go-sql-driver/mysql
+# ホストのファイルをコンテナの作業ディレクトリに移行
+ADD . /go/src/work
 
-RUN apt-get -y update
-RUN apt-get -y upgrade
-RUN apt-get install -y mariadb-client
+RUN go get -u -v github.com/gin-gonic/gin || true
+RUN go get -u -v github.com/gorilla/mux || true
+RUN go get -u -v github.com/jinzhu/gorm || true
+RUN go get -u -v github.com/go-sql-driver/mysql || true
+RUN go get -u -v github.com/oxequa/realize || true
 
-EXPOSE 9000
-CMD ["sh", "./start_app.sh"]
+ENV GO111MODULE=on
