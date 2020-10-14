@@ -1,19 +1,35 @@
 <!DOCTYPE html>
 <head>
-    <title>Vue.js Test</title>
-    <script src="https://unpkg.com/vue@2.6.11"></script>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Vue.js Test</title>
+  <script src="https://unpkg.com/vue@2.6.11"></script>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 </head>
 
 
 <div id="app">
-  <p>{{ items[0].name }}: {{ items[0].price }} x {{ items[0].quantity }}</p>
-  <p>小計: {{ totalPrice | numberWithDelimiter }}円</p>
-  <p>合計(税込): {{ totalPriceWithTax | numberWithDelimiter }}円</p>
+	<ul>
+		<li v-for="item in items" v-bind:key="item.name">
+			{{ item.name }}の個数: <input type="number" v-model="item.quantity" min="0">
+		</li>
+	</ul>
 
-  <p v-show="!canBuy">
-  　{{ 1000 | numberWithDelimiter }}円以上からご購入いただけます
-  </p>
+	<hr />
+
+	<div v-bind:style="errorMessageStyle">
+		<ul>
+			<li v-for="item in items" v-bind:key="item.name">
+				{{ item.name }} : {{item.price}} × {{item.quantity}} = {{item.price * item.quantity | numberWithDelimiter }} 円
+			</li>
+		</ul>
+
+  	<p>{{ items[0].name }}: {{ items[0].price }} x {{ items[0].quantity }}</p>
+  	<p>小計: {{ totalPrice | numberWithDelimiter }}円</p>
+  	<p>合計(税込): {{ totalPriceWithTax | numberWithDelimiter }}円</p>
+
+  	<p v-show="!canBuy">
+  		{{ 1000 | numberWithDelimiter }}円以上からご購入いただけます
+  	</p>
+  </div>
 </div>
 
 <script src="../../js/practice/app.js"></script>
