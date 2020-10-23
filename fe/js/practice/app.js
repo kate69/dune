@@ -22,6 +22,15 @@ const vm = new Vue({
     },
       items
   },
+  methods: {
+    doBuy () {
+      // 本来はここで、サーバーと通信をおこなう
+      alert(this.totalPriceWithTax + '円のお買い上げ！')
+      this.items.forEach(function (item) {
+        item.quantity = 0
+      })
+    }
+  },
   computed:{
     totalPrice() {
       return this.items.reduce(function (sum, item) {
